@@ -1,3 +1,3 @@
 # Architecture
 
-![services.svg](Services)
+![Services](/services.svg)
