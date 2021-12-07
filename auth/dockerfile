@@ -1,13 +1,11 @@
-# build binary
+# build
 FROM golang:1.17.1-alpine AS builder
-COPY . /app
-WORKDIR /build
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" /app/main.go
-
-# build image
-FROM scratch
-WORKDIR /build
-COPY --from=builder /build/main .
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o auth main.go
 
 # run
-ENTRYPOINT [ "/build/main" ]
+FROM scratch
+WORKDIR /build
+COPY --from=builder /src/auth .
+ENTRYPOINT [ "/build/auth" ]
