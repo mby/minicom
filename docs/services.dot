@@ -1,0 +1,9 @@
+digraph {
+	frontend -> krakend
+
+	krakend -> auth
+
+	auth -> users
+
+	users -> mongodb
+}
