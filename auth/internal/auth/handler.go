@@ -21,6 +21,7 @@ func NewHandler(cfg cfg.Config) Handler {
 
 	http.HandleFunc("/register", h.Register)
 	http.HandleFunc("/login", h.Login)
+	http.HandleFunc("/verify", h.Verify)
 
 	http.HandleFunc("/health", h.Health)
 	return h
@@ -75,6 +76,29 @@ func (h Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(helpers.Res(types.LoginResponse{Token: token}))
+}
+
+func (h Handler) Verify(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.Write(helpers.Res(errors.MethodNotAllowed))
+		return
+	}
+
+	req := types.VerifyRequest{}
+	if helpers.Body(r, &req) != nil {
+		w.Write(helpers.Res(errors.InvalidRequestBody))
+		return
+	}
+
+	user, err := h.authRepo.Verify(req.Token)
+	if err != nil {
+		w.Write(helpers.Res(err))
+		return
+	}
+
+	w.Write(helpers.Res(types.VerifyResponse{
+		Username: user.Username,
+	}))
 }
 
 func (h Handler) Health(w http.ResponseWriter, r *http.Request) {

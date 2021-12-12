@@ -19,4 +19,6 @@ var (
 	MethodNotAllowed      = Error{Message: "Method not allowed", Status: http.StatusMethodNotAllowed}
 	UserAlreadyExists     = Error{Message: "User already exists", Status: http.StatusForbidden}
 	UserNotFound          = Error{Message: "User not found", Status: http.StatusNotFound}
+	InvalidClaims         = Error{Message: "Invalid claims", Status: http.StatusUnauthorized}
+	FailedParsingToken    = Error{Message: "Failed to parse token", Status: http.StatusInternalServerError}
 )

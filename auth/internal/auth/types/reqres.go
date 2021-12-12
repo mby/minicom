@@ -21,3 +21,13 @@ type (
 		Token string `json:"token"`
 	}
 )
+
+type (
+	VerifyRequest struct {
+		Token string `json:"token"`
+	}
+
+	VerifyResponse struct {
+		Username string `json:"username"`
+	}
+)

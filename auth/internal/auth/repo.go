@@ -2,13 +2,13 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/mby/minicom/auth/internal/auth/types"
 	"github.com/mby/minicom/auth/internal/cfg"
 	"github.com/mby/minicom/auth/internal/errors"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -19,6 +19,7 @@ type IRepo interface {
 	Cleanup()
 	CreateUser(username, password string) error
 	Login(username, password string) (string, error)
+	Verify(tokenStr string) (*types.Claims, error)
 }
 
 type Repo struct {
@@ -64,12 +65,8 @@ func (r Repo) CreateUser(username, password string) error {
 	}
 
 	hashedPassword := string(bytes)
-	_, err = r.users.InsertOne(ctx, types.User{
-		Username: username,
-		Password: hashedPassword,
-	})
+	_, err = r.users.InsertOne(ctx, bson.M{"username": username, "password": hashedPassword})
 	if err != nil {
-		fmt.Println(err)
 		return errors.UserAlreadyExists
 	}
 
@@ -91,8 +88,8 @@ func (r Repo) Login(username, password string) (string, error) {
 		return "", errors.InvalidPassword
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": username,
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, types.Claims{
+		Username: username,
 	})
 	tokenStr, err := token.SignedString([]byte(r.cfg.JWTSecret))
 	if err != nil {
@@ -100,4 +97,21 @@ func (r Repo) Login(username, password string) (string, error) {
 	}
 
 	return tokenStr, nil
+}
+
+func (r Repo) Verify(tokenStr string) (*types.Claims, error) {
+	claims := &types.Claims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(r.cfg.JWTSecret), nil
+	})
+	if err != nil {
+		return nil, errors.FailedParsingToken
+	}
+
+	claims, ok := token.Claims.(*types.Claims)
+	if !ok || !token.Valid {
+		return nil, errors.InvalidClaims
+	}
+
+	return claims, nil
 }
