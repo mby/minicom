@@ -18,6 +18,9 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        env:
+        - name: ENV
+          value: qa
         ports:
         - containerPort: 8080
 ---
@@ -29,6 +32,9 @@ spec:
   type: NodePort
   selector:
     app: auth
+  env:
+  - name: ENV
+    value: qa
   ports:
   - port: 8080
     targetPort: 8080
