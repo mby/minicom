@@ -1,24 +1,33 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package main
 
 import (
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/mby/minicom/auth/internal/auth"
+	"github.com/mby/minicom/auth/internal/cfg"
+	"github.com/mby/minicom/auth/internal/helpers"
 )
 
+func GetEnv() string {
+	env := os.Getenv("ENV")
+
+	if env == "" {
+		panic("ENV is not set")
+	}
+
+	return env
+}
+
 func main() {
-	auth.Main()
+	env := GetEnv()
+	cfg := cfg.GetConfig(env)
+
+	authHandler := auth.NewHandler(cfg)
+	defer authHandler.Cleanup()
+
+	port := ":8080"
+	helpers.PrintBanner("auth", port)
+	log.Fatal(http.ListenAndServe(port, nil))
 }
