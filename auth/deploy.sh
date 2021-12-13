@@ -1,3 +1,3 @@
-docker build . -t flurach/$(basename `pwd`)
-docker push flurach/$(basename `pwd`)
+docker build . -t flurach/auth
+kind load docker-image flurach/auth:latest
 kubectl apply -f k8s.yml
