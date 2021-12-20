@@ -59,17 +59,18 @@ func (r Repo) CreateUser(username, password string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	query := r.users.FindOne(ctx, bson.M{"username": username})
+	if query.Err() == nil {
+		return errors.UserAlreadyExists
+	}
+
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return errors.FailedHashingPassword
 	}
 
 	hashedPassword := string(bytes)
-	_, err = r.users.InsertOne(ctx, bson.M{"username": username, "password": hashedPassword})
-	if err != nil {
-		return errors.UserAlreadyExists
-	}
-
+	r.users.InsertOne(ctx, bson.M{"username": username, "password": hashedPassword})
 	return nil
 }
 
@@ -78,7 +79,7 @@ func (r Repo) Login(username, password string) (string, error) {
 	defer cancel()
 
 	var user types.User
-	err := r.users.FindOne(ctx, types.User{Username: username}).Decode(&user)
+	err := r.users.FindOne(ctx, bson.M{"username": username}).Decode(&user)
 	if err != nil {
 		return "", errors.UserNotFound
 	}

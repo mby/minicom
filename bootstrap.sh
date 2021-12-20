@@ -5,10 +5,6 @@ cd kubernetes-dashboard
 sh deploy.sh
 cd -
 
-cd mongodb
-sh deploy.sh
-cd -
-
 cd auth
 sh deploy.sh
 cd -

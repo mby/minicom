@@ -10,13 +10,13 @@ type Config struct {
 var cfgs = map[string]Config{
 	"qa": {
 		JWTSecret:       "secret",
-		MongoURI:        "mongodb://my-user:password@example-mongodb-svc.mongodb-operator:27017",
-		MongoDB:         "auth",
+		MongoURI:        "mongodb://localhost:27017", // TODO: mongodb
+		MongoDB:         "auth-qa",
 		UsersCollection: "users",
 	},
 	"prod": {
 		JWTSecret:       "secret",
-		MongoURI:        "mongodb://my-user:password@example-mongodb-svc.mongodb-operator:27017",
+		MongoURI:        "mongodb://localhost:27017", // TODO: mongodb
 		MongoDB:         "auth",
 		UsersCollection: "users",
 	},
