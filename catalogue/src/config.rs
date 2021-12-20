@@ -10,19 +10,19 @@ pub struct Config {
 lazy_static! {
         static ref CONFIGS: HashMap<&'static str, Config> = {
                 let mut map = HashMap::new();
-            
+
                 map.insert("qa", Config {
                     mongo_uri: "mongodb://localhost:27017", // TODO: mongodb
                     mongo_db: "catalogue-qa",
                     brand_collection: "brands",
                 });
-            
+
                 map.insert("prod", Config {
                     mongo_uri: "mongodb://localhost:27017", // TODO: mongodb
                     mongo_db: "catalogue",
                     brand_collection: "brands",
                 });
-            
+
                 map
         };
 }

@@ -1,6 +1,6 @@
-use rocket::response::Responder;
+use rocket::{form::FromForm, response::Responder};
 
-#[derive(Responder)]
+#[derive(FromForm)]
 pub struct BrandPostRequest {
         pub name: String,
 }

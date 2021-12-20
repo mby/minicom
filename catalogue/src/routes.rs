@@ -1,8 +1,6 @@
-use mongodb::bson;
-use super::types;
-use super::App;
+use super::{App, types};
+use rocket::{State, form::Form};
 use rocket::response::content::Json;
-use rocket::State;
 
 #[get("/health")]
 pub fn health() -> &'static str {
@@ -10,7 +8,7 @@ pub fn health() -> &'static str {
 }
 
 #[post("/brand", data = "<brand>")]
-pub async fn post_brand(app: &State<App>, brand: types::BrandPostRequest) -> Json<types::BrandPostResponse> {
+pub async fn post_brand(app: &State<App>, brand: Form<types::BrandPostRequest>) -> Json<types::BrandPostResponse> {
         app.brands.insert_one(types::Brand{
                 name: brand.name.clone(),
         }, None).await.unwrap();
