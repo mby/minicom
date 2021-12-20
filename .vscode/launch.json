@@ -1,0 +1,12 @@
+{
+        "configurations": [
+                {
+                        "name": "auth",
+                        "type": "go",
+                        "request": "launch",
+                        "mode": "auto",
+                        "program": "auth/main.go",
+                        "env": { "ENV": "qa" },
+                }
+        ]
+}
